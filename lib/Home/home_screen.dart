@@ -35,13 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   backgroundImage: NetworkImage(
                       "https://dp-pic.com/wp-content/uploads/2024/07/a-handsome-man-in-dark-with-hidden-face-boys-attitude-dp-by-dp-pic-2-768x768.jpg"),
                 ),
+
                 ///dropdown menu container///////
                 Container(
                   height: 48,
                   width: 140,
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 242, 240, 240),
-                    border: null,
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Center(
@@ -70,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             })),
                   ),
                 ),
+
                 ///bag icon button////
                 CircleAvatar(
                   radius: 25,
@@ -85,10 +86,44 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ],
-            )
+            ),
+
+            ///search bar//////////////
+            const SizedBox(height: 30),
+            Container(
+              height: 50,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 242, 240, 240),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  icon: Padding(
+                    padding: EdgeInsets.only(left: 20),
+                    child: Icon(Icons.search_outlined, color: Colors.black),
+                  ),
+                  hintText: 'Search...',
+                  hintStyle: TextStyle(color: Colors.black),
+                  contentPadding: EdgeInsets.only(left: -5),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+              Text(
+                'Categories',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ]),
           ],
         ),
       ),
     );
   }
 }
+
+
