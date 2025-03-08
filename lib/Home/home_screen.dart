@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:e_shopping_app/API/api_service.dart';
+import 'package:e_shopping_app/Cart/cart.dart';
+import 'package:e_shopping_app/Model/data_model.dart';
+import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,7 +12,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  /////////////////////////////////
   String? selectedCategory;
   final List<String> categories = [
     "Men",
@@ -18,187 +20,348 @@ class _HomeScreenState extends State<HomeScreen> {
     "Newborn",
     "Others"
   ];
-  bool isLoading = false;
-  
+  TextEditingController searchController = TextEditingController();
+  List<Product> filteredProducts = [];
+  late Future<List<Product>> productFuture;
+  List<Product> cartItems = [];
+  bool skeletonloader = true;
 
-  
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: 2000), () {
+      setState(() {
+        skeletonloader = false;
+      });
+    });
+    productFuture = ApiService().fetchProductData();
+  }
 
+  //filter product and search by PID
+  void filterProductsById(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        filteredProducts = [];
+      });
+      return;
+    }
+    productFuture.then((products) {
+      List<Product> filteredList = [];
+      for (var product in products) {
+        if (product.pid.toString().contains(query)) {
+          filteredList.add(product);
+        }
+      }
+      setState(() {
+        filteredProducts = filteredList;
+      });
+    });
+  }
+
+  //body parts///////////
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //////top row///////////////////
-            const SizedBox(height: 45),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundImage: NetworkImage(
-                      "https://dp-pic.com/wp-content/uploads/2024/07/a-handsome-man-in-dark-with-hidden-face-boys-attitude-dp-by-dp-pic-2-768x768.jpg"),
-                ),
-
-                ///dropdown menu container///////
-                Container(
-                  height: 48,
-                  width: 140,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 242, 240, 240),
-                    borderRadius: BorderRadius.circular(30),
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
+      body: Skeletonizer(
+        enabled: skeletonloader,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //////top row///////////////////
+              const SizedBox(height: 45),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage(
+                        "https://dp-pic.com/wp-content/uploads/2024/07/a-handsome-man-in-dark-with-hidden-face-boys-attitude-dp-by-dp-pic-2-768x768.jpg"),
                   ),
-                  child: Center(
-                    child: DropdownButtonHideUnderline(
+
+                  ///dropdown menu container///////
+                  Container(
+                    height: 48,
+                    width: 140,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 242, 240, 240),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Center(
+                      child: DropdownButtonHideUnderline(
                         child: DropdownButton(
-                            value: selectedCategory,
-                            hint: const Text(
-                              "Category",
-                              style:
-                                  TextStyle(fontSize: 15, color: Colors.black),
-                            ),
-                            icon: const Icon(
-                              Icons.keyboard_arrow_down,
-                              color: Colors.black,
-                            ),
-                            items: categories.map((String category) {
-                              return DropdownMenuItem(
-                                value: category,
-                                child: Text(category),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedCategory = newValue;
-                              });
-                            })),
-                  ),
-                ),
-
-                ///bag icon button////
-                CircleAvatar(
-                  radius: 25,
-                  backgroundColor: const Color.fromARGB(255, 153, 123, 237),
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: Center(
-                      child: const Icon(
-                        Icons.shopping_bag_outlined,
-                        color: Colors.white,
+                          value: selectedCategory,
+                          hint: const Text(
+                            "Category",
+                            style: TextStyle(fontSize: 15, color: Colors.black),
+                          ),
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.black,
+                          ),
+                          items: categories.map((String category) {
+                            return DropdownMenuItem(
+                              value: category,
+                              child: Text(category),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedCategory = newValue;
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
 
-            ///search bar//////////////
-            const SizedBox(height: 30),
-            Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 242, 240, 240),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  icon: Padding(
-                    padding: EdgeInsets.only(left: 20),
-                    child: Icon(Icons.search_outlined, color: Colors.black),
+                  ///bag icon button////
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundColor: const Color.fromARGB(255, 153, 123, 237),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => CartPage(cartItems: [])),
+                        );
+                      },
+                      icon: Center(
+                        child: const Icon(
+                          Icons.shopping_bag_outlined,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
-                  hintText: 'Search...',
-                  hintStyle: TextStyle(color: Colors.black),
-                  contentPadding: EdgeInsets.only(left: -5),
+                ],
+              ),
+
+              ///search bar//////////////
+              const SizedBox(height: 30),
+              Container(
+                height: 50,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 242, 240, 240),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: TextFormField(
+                    controller: searchController,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      icon: Padding(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Icon(Icons.search_outlined, color: Colors.black),
+                      ),
+                      hintText: 'Search by PID',
+                      hintStyle: TextStyle(color: Colors.black),
+                      contentPadding: EdgeInsets.only(left: -5),
+                    ),
+                    onChanged: (value) {
+                      filterProductsById(value);
+                    }),
+              ),
+
+              ///////////////////////////////////////////////////////////
+              const SizedBox(height: 20),
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                const Text(
+                  'Categories',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 20),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Categories(
+                        categoryimageURL:
+                            'https://prabhubhakti.in/wp-content/uploads/2023/02/Best-motivational-quotes-with-designed-printed-t-shirt-for-men.jpg',
+                        categoryName: 'T-shirts'),
+                    SizedBox(width: 30),
+                    Categories(
+                        categoryimageURL:
+                            'https://th.bing.com/th/id/OIP.8QNYHsDDw5BYXc2GjsxisAHaJQ?w=208&h=260&c=7&r=0&o=5&dpr=1.3&pid=1.7',
+                        categoryName: 'Jeans'),
+                    SizedBox(width: 30),
+                    Categories(
+                        categoryimageURL:
+                            'https://th.bing.com/th/id/OIP.Chop318pkHjWLSrNEf-ZrgHaJ4?w=208&h=277&c=7&r=0&o=5&dpr=1.3&pid=1.7',
+                        categoryName: 'Hoddies'),
+                    SizedBox(width: 30),
+                    Categories(
+                        categoryimageURL:
+                            'https://th.bing.com/th/id/OIP.z8fqdOzefKSqNReKoGxGogHaHa?w=159&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7',
+                        categoryName: 'Shoes'),
+                    SizedBox(width: 30),
+                    Categories(
+                        categoryimageURL:
+                            'https://th.bing.com/th/id/OIP.LCnfmwqTYUiCQleTvRrVBgHaCY?w=332&h=112&c=7&r=0&o=5&dpr=1.3&pid=1.7',
+                        categoryName: 'Accessories'),
+                    SizedBox(width: 30),
+                    Categories(
+                        categoryimageURL:
+                            'https://th.bing.com/th/id/OIP.BzPtEqzTX3LUHAEYNQlEoQHaHa?w=186&h=187&c=7&r=0&o=5&dpr=1.3&pid=1.7',
+                        categoryName: 'Bag'),
+                    SizedBox(width: 30),
+                    Categories(
+                        categoryimageURL:
+                            'https://th.bing.com/th/id/OIP.W4P-QoQr6luJ1qdqpLQaOwHaKC?w=208&h=282&c=7&r=0&o=5&dpr=1.3&pid=1.7',
+                        categoryName: 'Saree'),
+                    const SizedBox(width: 30),
+                  ],
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              Text(
-                'Categories',
+              const SizedBox(height: 40),
+              const Text(
+                'All Products',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15),
               ),
-            ]),
-            SizedBox(height: 20),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Categories(
-                      categoryimageURL:
-                          'https://prabhubhakti.in/wp-content/uploads/2023/02/Best-motivational-quotes-with-designed-printed-t-shirt-for-men.jpg',
-                      categoryName: 'T-shirts'),
-                  SizedBox(width: 30),
-                  Categories(
-                      categoryimageURL:
-                          'https://th.bing.com/th/id/OIP.8QNYHsDDw5BYXc2GjsxisAHaJQ?w=208&h=260&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-                      categoryName: 'Jeans'),
-                  SizedBox(width: 30),
-                  Categories(
-                      categoryimageURL:
-                          'https://th.bing.com/th/id/OIP.Chop318pkHjWLSrNEf-ZrgHaJ4?w=208&h=277&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-                      categoryName: 'Hoddies'),
-                  SizedBox(width: 30),
-                  Categories(
-                      categoryimageURL:
-                          'https://th.bing.com/th/id/OIP.z8fqdOzefKSqNReKoGxGogHaHa?w=159&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-                      categoryName: 'Shoes'),
-                  SizedBox(width: 30),
-                  Categories(
-                      categoryimageURL:
-                          'https://th.bing.com/th/id/OIP.LCnfmwqTYUiCQleTvRrVBgHaCY?w=332&h=112&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-                      categoryName: 'Accessories'),
-                  SizedBox(width: 30),
-                  Categories(
-                      categoryimageURL:
-                          'https://th.bing.com/th/id/OIP.BzPtEqzTX3LUHAEYNQlEoQHaHa?w=186&h=187&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-                      categoryName: 'Bag'),
-                  SizedBox(width: 30),
-                  Categories(
-                      categoryimageURL:
-                          'https://th.bing.com/th/id/OIP.W4P-QoQr6luJ1qdqpLQaOwHaKC?w=208&h=282&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-                      categoryName: 'Saree'),
-                  SizedBox(width: 30),
-                ],
-              ),
-            ),
-            SizedBox(height: 40),
-            Text(
-              'All Products',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15),
-            ),
-            SizedBox(height: 15),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.75,
-                children: [
-                  ProductCard(
-                      image:
-                          'https://th.bing.com/th/id/OIP.8QNYHsDDw5BYXc2GjsxisAHaJQ?w=208&h=260&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-                      name: 'GREY JEANS')
-                ],
-              ),
-            )
-          ],
+              const SizedBox(height: 15),
+              filteredProducts.isEmpty && searchController.text.isNotEmpty
+                  ? Column(
+                      children: [
+                        Image.asset('assets/images/nodata.png'),
+                        const Text(
+                          'No data found!!!👀',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        )
+                      ],
+                    )
+                  : Expanded(
+                      child: FutureBuilder<List<Product>>(
+                        future: productFuture,
+                        builder: (context, snapshot) {
+                           if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(
+                                child: const Text('No products available.'));
+                          } else {
+                            var products = snapshot.data!;
+                            var displayProducts = filteredProducts.isEmpty
+                                ? products : filteredProducts;
+
+                            return ListView.builder(
+                              itemCount: displayProducts.length,
+                              itemBuilder: (context, index) {
+                                var product = displayProducts[index];
+                                return Stack(
+                                  children: [
+                                    Container(
+                                      height: 150,
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                        color: const Color.fromARGB(
+                                            255, 229, 226, 226),
+                                        border: Border.all(
+                                            color: Colors.white, width: 5),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Image.network(
+                                            product.imageUrl,
+                                          ),
+                                          const VerticalDivider(
+                                            color: Colors.white,
+                                            width: 1,
+                                            thickness: 6,
+                                          ),
+                                          const SizedBox(width: 50),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(height: 30),
+                                              Text(
+                                                'PID: ${product.pid}',
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                'PNAME: ${product.pname}',
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                'PRICE: ${product.price}',
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 3,
+                                      left: 340,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            cartItems.add(product);
+                                          });
+                                        },
+                                        icon: Center(
+                                          child: const Icon(
+                                            Icons.shopping_bag_outlined,
+                                            color: Color.fromARGB(
+                                                255, 126, 83, 244),
+                                            size: 34,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                        top: 20,
+                                        left: 360,
+                                        child: const Text(
+                                          '+',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(
+                                                255, 126, 83, 244),
+                                          ),
+                                        )),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    )
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/////category cirle widget/////////////
+///////////////////////////////////////////////////////////////////////////////
+///category circle widget/////////////
 class Categories extends StatefulWidget {
   final String categoryimageURL;
   final String categoryName;
@@ -224,43 +387,5 @@ class CategoryState extends State<Categories> {
         style: TextStyle(fontSize: 13, color: Colors.black),
       )
     ]);
-  }
-}
-
-///productCard with name and image from api////////////////
-class ProductCard extends StatefulWidget {
-  final String image;
-  final String name;
-
-  const ProductCard({
-    super.key,
-    required this.image,
-    required this.name,
-  });
-
-  @override
-  ProductCardState createState() => ProductCardState();
-}
-
-class ProductCardState extends State<ProductCard> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 150,
-      width: 100,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          color: const Color.fromARGB(255, 242, 240, 240)),
-      child: Column(children: [
-        SizedBox(height: 30),
-        SizedBox(
-          height: 100,
-          width: 60,
-          child: Image.network(widget.image),
-        ),
-        SizedBox(height: 20),
-        Text(widget.name)
-      ]),
-    );
   }
 }
