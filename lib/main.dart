@@ -1,14 +1,22 @@
 import 'package:e_shopping_app/Home/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:e_shopping_app/Provider/provider.dart';
+//import 'package:flutter/rendering.dart';
 
 void main() {
-  runApp(const MyApp());
+  //debugPaintSizeEnabled = true;
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => CartModel(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

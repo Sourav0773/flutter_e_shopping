@@ -6,14 +6,14 @@ class ApiService {
   final String baseURL =
       'https://emobile-fzbygfa6bdfjaac4.centralindia-01.azurewebsites.net/Api/getProducts';
 
-  Future<List<Product>> fetchProductData() async {
+  Future<List<Products>> fetchProductData() async {
     try {
       Response response = await dio.get(
         baseURL,
       );
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;
-        return data.map((json) => Product.fromJson(json)).toList();
+        return data.map((json) => Products.fromJson(json)).toList();
       } else {
         throw Exception("Failed to load data");
       }
