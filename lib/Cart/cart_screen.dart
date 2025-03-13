@@ -1,4 +1,4 @@
-import 'package:e_shopping_app/Provider/provider.dart';
+import 'package:e_shopping_app/Provider/cartmodel_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';

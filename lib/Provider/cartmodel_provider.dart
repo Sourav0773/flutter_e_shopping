@@ -1,12 +1,13 @@
-import 'package:e_shopping_app/Model/data_model.dart';
 import 'package:flutter/material.dart';
+import 'package:e_shopping_app/Model/data_model.dart';
 
 class CartModel extends ChangeNotifier {
+
   bool skeletonloader = false;
-  final List<Products> _cartItems = [];
-  List<Products> get cartItems => _cartItems;
-  late Products _selectedProduct;
-  Products get selectedProduct => _selectedProduct;
+
+  final List<Products> cartItems = [];
+
+  late Products selectedProduct;
 
   void stopSkeletonLoader() {
     skeletonloader = false;
@@ -21,27 +22,27 @@ class CartModel extends ChangeNotifier {
   }
 
   void addToCart(Products product) {
-    _cartItems.add(product);
+    cartItems.add(product);
     //print('produtadded');
     notifyListeners();
   }
 
   void removeFromCart(Products product) {
-    _cartItems.remove(product);
+    cartItems.remove(product);
     //print('iteremioved from cart');
     notifyListeners();
   }
 
   double get totalPrice {
     double total = 0.0;
-    for (var product in _cartItems) {
+    for (var product in cartItems) {
       total += product.price;
     }
     return total;
   }
 
   void selectProduct(Products product) {
-    _selectedProduct = product;
-    notifyListeners(); 
+    selectedProduct = product;
+    notifyListeners();
   }
 }
