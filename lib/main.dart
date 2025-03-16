@@ -1,5 +1,4 @@
 import 'package:e_shopping_app/Home/home_screen.dart';
-import 'package:e_shopping_app/Provider/lazyloading_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:e_shopping_app/Provider/cartmodel_provider.dart';
@@ -11,7 +10,6 @@ void main() {
     MultiProvider(
       providers:[
       ChangeNotifierProvider(create: (context) => CartModel()),
-      ChangeNotifierProvider(create: (context) => PaginationModel()),
       ],
       child: const MyApp(),
     ),

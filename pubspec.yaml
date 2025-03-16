@@ -41,6 +41,8 @@ dependencies:
   infinite_scroll_pagination: ^5.0.0
   skeletonizer: ^1.4.3
   shared_preferences: ^2.5.2
+  widgets_easier: ^0.0.10
+  glassmorphism_widgets: ^0.2.2
 
 dev_dependencies:
   flutter_test:

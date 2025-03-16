@@ -25,7 +25,7 @@ class CartScreenState extends State<CartScreen> {
     );
   }
 
-  ///Empty Cart Screen//
+  //empty cart screen////
   Widget emptyCart() {
     return Center(
       child: Column(
@@ -60,7 +60,7 @@ class CartScreenState extends State<CartScreen> {
     );
   }
 
-  ///Cart with Items/////////////////////////
+  //when we have items in cart/////
   Widget cartWithItems(CartModel cartModel) {
     return RefreshIndicator(
       onRefresh: () => cartModel.startSkeletonLoader(),
@@ -74,7 +74,7 @@ class CartScreenState extends State<CartScreen> {
                 itemBuilder: (context, index) {
                   final product = cartModel.cartItems[index];
                   return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Stack(children: [
                       Container(
                         height: 150,
@@ -121,7 +121,7 @@ class CartScreenState extends State<CartScreen> {
                           ],
                         ),
                       ),
-                      //remove from cart/////
+                      //remove from cart///
                       Positioned(
                         top: 3,
                         left: 340,
