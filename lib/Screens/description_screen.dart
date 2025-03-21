@@ -55,7 +55,10 @@ class DescriptionScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 Text(
                   'Description: ${selectedProduct.pdescription}',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 20, 
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
               ],
             ),

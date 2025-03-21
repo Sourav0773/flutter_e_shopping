@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:e_shopping_app/Model/data_model.dart';
 
 class CartModel extends ChangeNotifier {
-
   bool skeletonloader = false;
 
   final List<Products> cartItems = [];
@@ -17,7 +16,7 @@ class CartModel extends ChangeNotifier {
   Future<void> startSkeletonLoader() async {
     skeletonloader = true;
     notifyListeners();
-    await Future.delayed(Duration(milliseconds: 1400));
+    await Future.delayed(Duration(milliseconds: 2000));
     stopSkeletonLoader();
   }
 

@@ -2,7 +2,7 @@ import 'package:e_shopping_app/API/api_service.dart';
 import 'package:e_shopping_app/Model/data_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:e_shopping_app/Home/home_screen.dart';
+import 'package:e_shopping_app/Screens/home_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({super.key});
@@ -12,7 +12,7 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  //initial states for checkboxes///
+  // Initial states for checkboxes
   bool cat1 = false;
   bool cat2 = false;
   bool cat3 = false;
@@ -23,8 +23,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
   List<String> selectedCategories = [];
   bool isLoading = false;
 
-  //fetch data when checkbox is selected or removee when deselected
-  void fetchData(String category, bool isSelected) async {
+  // Fetch data when checkbox is selected or removee when deselected
+  Future fetchData(String category, bool isSelected) async {
     setState(() {
       isLoading = true; 
     });
@@ -59,10 +59,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
       appBar: AppBar(
         title: const Text('Filtered Products'),
       ),
+
       drawer: Drawer(
-        backgroundColor:
-            const Color.fromARGB(255, 176, 8, 206).withOpacity(0.1),
+        backgroundColor:const Color.fromARGB(255, 176, 8, 206).withOpacity(0.1),
         shape: Border(bottom: BorderSide.none),
+
         child: Padding(
           padding: const EdgeInsets.all(30),
           child: ListView(
@@ -72,6 +73,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 'Filter Options',
                 style: TextStyle(color: Colors.white, fontSize: 27),
               ),
+
               const SizedBox(height: 15),
               CheckboxListTile(
                 title: const Text(
@@ -87,6 +89,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 },
                 controlAffinity: ListTileControlAffinity.leading,
               ),
+              
               const SizedBox(height: 15),
               CheckboxListTile(
                 title: const Text(
@@ -102,6 +105,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 },
                 controlAffinity: ListTileControlAffinity.leading,
               ),
+
               const SizedBox(height: 15),
               CheckboxListTile(
                 title: const Text(
@@ -117,6 +121,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 },
                 controlAffinity: ListTileControlAffinity.leading,
               ),
+
               const SizedBox(height: 15),
               CheckboxListTile(
                 title: const Text(
@@ -132,6 +137,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 },
                 controlAffinity: ListTileControlAffinity.leading,
               ),
+
               SizedBox(height: 15),
               CheckboxListTile(
                 title: const Text(
@@ -177,9 +183,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
               : ListView.builder(
                   itemCount: filteredProducts.length,
                   itemBuilder: (context, index) {
-                    var product = filteredProducts[index];
-                    //ProductCard widget reused from home_screen//
-                    return ProductCard(product: product);
+                    //ProductCard widget reused from home_screen
+                    return ProductCard(product: filteredProducts[index]);
                   },
                 ),
     );

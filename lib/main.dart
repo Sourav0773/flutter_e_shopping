@@ -1,4 +1,4 @@
-import 'package:e_shopping_app/Home/home_screen.dart';
+import 'package:e_shopping_app/Screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:e_shopping_app/Provider/cartmodel_provider.dart';

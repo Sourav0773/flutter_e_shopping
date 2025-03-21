@@ -43,6 +43,8 @@ dependencies:
   shared_preferences: ^2.5.2
   widgets_easier: ^0.0.10
   glassmorphism_widgets: ^0.2.2
+  flutter_lazy_listview: ^1.0.1
+  flutter_lazy_indexed_stack: ^0.0.6
 
 dev_dependencies:
   flutter_test:
