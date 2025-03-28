@@ -12,7 +12,7 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  // Initial states for checkboxes
+
   bool cat1 = false;
   bool cat2 = false;
   bool cat3 = false;
@@ -23,7 +23,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
   List<String> selectedCategories = [];
   bool isLoading = false;
 
-  // Fetch data when checkbox is selected or removee when deselected
   Future fetchData(String category, bool isSelected) async {
     setState(() {
       isLoading = true; 
